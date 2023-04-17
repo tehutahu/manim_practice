@@ -5,9 +5,9 @@ class BinarySearch(Scene):
     def __init__(self):
         super().__init__()
         self.values = sorted(
-            np.random.randint(low=0, high=30, size=12, dtype=np.uint8)
+            np.random.randint(low=0, high=100, size=50, dtype=np.uint8)
         )
-        target_idx = 3
+        target_idx = 13
         self.target = self.values[target_idx]
 
     def binary_search(self):
@@ -27,21 +27,17 @@ class BinarySearch(Scene):
             yield (i, j, k)
         yield (i, j, k)
 
+    def create_box(self, value: int) -> VGroup:
+        return VGroup(Square(side_length=1), Tex(f'{value}')).set(height=1)
+
     def construct(self):
         title = Tex(f"Target: {self.target}").to_edge(UP)
 
-        squares = VGroup(
-            *[Square().scale(0.5) for _ in range(len(self.values))]
-        ).arrange()
-        labels = VGroup(*[Tex(f"{v}") for v in self.values])
-        for i in range(len(labels)):
-            labels[i].add_updater(
-                lambda mob, i=i: mob.move_to(squares[i].get_center())
-            )
+        squares = VGroup(*[self.create_box(v) for v in self.values]).arrange(buff=0.5)
 
         self.play(
             AnimationGroup(
-                AnimationGroup(Write(squares), Write(labels)),
+                Write(squares),
                 Write(title),
                 lag_ratio=0.8,
             )
@@ -78,7 +74,7 @@ class BinarySearch(Scene):
             )
             if i == j == k:
                 self.play(
-                    VGroup(squares[k], labels[k]).animate.set_color(GREEN)
+                    squares[k].animate.set_color(GREEN)
                 )
             else:
                 self.play(
